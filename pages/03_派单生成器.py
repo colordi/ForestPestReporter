@@ -43,6 +43,7 @@ def process_word(row, template_file, img_files):
     number_of_trees = str(row['受害株数'])  # 棵树
     greenery_type = str(row['地块类型'])  # 绿化性质
     description = str(row['详细描述'])  # 详细描述
+    webbed_nests = str(row['网幕数'])  # 网幕数
 
     doc = Document(template_file)  # 读取Word模板文件
     # 替换第一段落的内容
@@ -96,6 +97,10 @@ def process_word(row, template_file, img_files):
                 # 修改表格中的具体描述
                 if cell.text == '具体描述':
                     cell.text = description
+                # 修改表格中的具体网幕数
+                if cell.text == '具体网幕数':
+                    cell.text = webbed_nests
+                    cell.paragraphs[0].paragraph_format.alignment = 1
     # 插入图片
     # 首先筛选出前缀为编号的图片
     img_files = [file for file in img_files if file.name.startswith(number)]
@@ -157,6 +162,6 @@ def generate_word(filtered_data, template_file, img_files):
 if __name__ == '__main__':
     st.title('派单生成器')
     filtered_data = show_select_data()
-    template_file = r'template\template.doc'
+    template_file = r'template/美国白蛾派单模版.docx'
     img_files = get_images()
     generate_word(filtered_data, template_file, img_files)
