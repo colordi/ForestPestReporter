@@ -14,13 +14,15 @@ def get_last_result():
     df_treatment_grouped = df_treatment.groupby('点位编号')
     df_treatment_res = df_treatment_grouped.apply(lambda g: pd.Series({
         '总防治次数': g['防治日期'].count(),
-        '最新防治日期': g['防治日期'].max()
+        '最新防治日期': g['防治日期'].max(),
+        '首次防治日期': g['防治日期'].min(),
     }))
     df_last_result = pd.merge(df_survey_res, df_treatment_res, on='点位编号', how='outer')
     # 把点位编号作为列
     df_last_result.reset_index(inplace=True)
     # df_last_result的点位需要过滤，必须在df_first_damage中才能显示
     df_last_result = pd.merge(df_last_result, df_first_damage, on='点位编号', how='inner')
+
     return df_last_result
 
 
@@ -36,10 +38,10 @@ def get_current_status(row):
 
 
 # 展示当前点位信息
-df_last_result = get_last_result()
-df_last_result['当前状态'] = df_last_result.apply(get_current_status, axis=1)
+df_last_result_all = get_last_result()
+df_last_result_all['当前状态'] = df_last_result_all.apply(get_current_status, axis=1)
 # 修改列名的顺序
-df_last_result = df_last_result[
+df_last_result = df_last_result_all[
     ['点位编号', '最新调查日期', '最新防治日期', '最新调查结果', '总调查次数', '总防治次数', '当前状态']]
 
 
@@ -70,6 +72,22 @@ def show_current_status():
     # 为了展示好看，将日期转换为字符串格式
     df_last_result['最新调查日期'] = df_last_result['最新调查日期'].dt.strftime('%Y-%m-%d')
     df_last_result['最新防治日期'] = df_last_result['最新防治日期'].dt.strftime('%Y-%m-%d')
+
+    # 展示整体的防治台账
+    x = df_last_result_all.copy()
+    x = x[['调查日期','区域','乡镇/街道','点位编号','点位名','发生位置','地块类型','危害寄主','受害株数','网幕数','巡查是否剪网',
+           '剪网是否彻底','派单时间','首次防治日期','最新调查日期','最新调查结果','总调查次数','总防治次数','当前状态']]
+    # 为了展示好看，将日期转换为字符串格式
+    x['调查日期'] = x['调查日期'].dt.strftime('%Y-%m-%d')
+    x['派单时间'] = x['派单时间'].dt.strftime('%Y-%m-%d')
+    x['首次防治日期'] = x['首次防治日期'].dt.strftime('%Y-%m-%d')
+    x['最新调查日期'] = x['最新调查日期'].dt.strftime('%Y-%m-%d')
+    # 按照调查日期升序排列
+    x.sort_values(by='调查日期', inplace=True)
+    # 重置索引
+    x.reset_index(inplace=True, drop=True)
+    st.subheader('整体防治台账')
+    st.dataframe(x, use_container_width=True)
 
     # 共展示3个数据框
 
