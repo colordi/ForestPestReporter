@@ -44,6 +44,7 @@ def process_word(row, template_file, img_files):
     greenery_type = str(row['地块类型'])  # 绿化性质
     description = str(row['详细描述'])  # 详细描述
     webbed_nests = str(row['网幕数'])  # 网幕数
+    notes = str(row['备注'])  # 备注
 
     doc = Document(template_file)  # 读取Word模板文件
     # 替换第一段落的内容
@@ -98,15 +99,19 @@ def process_word(row, template_file, img_files):
                 if cell.text == '具体描述':
                     cell.text = description
                 # 修改表格中的具体网幕数
-                if cell.text == '具体网幕数':
+                if cell.text == '具体网幕个数':
                     cell.text = webbed_nests
+                    cell.paragraphs[0].paragraph_format.alignment = 1
+                # 修改表格中的具体备注
+                if cell.text == '具体备注':
+                    cell.text = notes
                     cell.paragraphs[0].paragraph_format.alignment = 1
     # 插入图片
     # 首先筛选出前缀为编号的图片
     img_files = [file for file in img_files if file.name.startswith(number)]
     count = 0
     # 4个图片的索引
-    size_list = [(9, 0), (9, 3), (11, 0), (11, 3)]
+    size_list = [(10, 0), (10, 3), (12, 0), (12, 3)]
     for img in img_files:
         image = Image.open(img)
         width, height = image.size

@@ -9,8 +9,8 @@ st.set_page_config(layout='wide')
 # 读取数据库
 def get_data():
     # 读取调查表和防治表
-    df_survey = pd.read_excel(r"data/第一代美国白蛾调查表.xlsx")
-    df_treatment = pd.read_excel(r"data/第一代美国白蛾防治表.xlsx")
+    df_survey = pd.read_excel(r"data/2023年第二代美国白蛾调查表.xlsx", dtype={'受害株数': 'Int64', '网幕数': 'Int64'})
+    df_treatment = pd.read_excel(r"data/2023年第二代美国白蛾防治表.xlsx")
     return df_survey, df_treatment
 
 

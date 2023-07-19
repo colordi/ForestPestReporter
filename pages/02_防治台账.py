@@ -50,7 +50,6 @@ def show_current_status():
     # 总已经防治点位数，即初次受害点位中剪网是否彻底为是的点位数和为否且防治次数大于0的点位数
     # 剪网是否彻底为否的点位数据
     no_treated_site_counts = df_first_damage[df_first_damage['剪网是否彻底'] == '否']
-    print(len(no_treated_site_counts))
     # 从df_treatment中将点位编号转换为列表
     treatment_list = df_treatment['点位编号'].tolist()
     no_treated_site_counts = len(no_treated_site_counts[no_treated_site_counts['点位编号'].isin(treatment_list)])
@@ -76,7 +75,7 @@ def show_current_status():
     # 展示整体的防治台账
     x = df_last_result_all.copy()
     x = x[['调查日期','区域','乡镇/街道','点位编号','点位名','发生位置','地块类型','危害寄主','受害株数','网幕数','巡查是否剪网',
-           '剪网是否彻底','派单时间','首次防治日期','最新调查日期','最新调查结果','总调查次数','总防治次数','当前状态']]
+           '剪网是否彻底','派单时间', '首次防治日期','最新调查日期','最新调查结果','总调查次数','总防治次数','当前状态']]
     # 为了展示好看，将日期转换为字符串格式
     x['调查日期'] = x['调查日期'].dt.strftime('%Y-%m-%d')
     x['派单时间'] = x['派单时间'].dt.strftime('%Y-%m-%d')
