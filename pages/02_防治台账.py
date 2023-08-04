@@ -74,8 +74,10 @@ def show_current_status():
 
     # 展示整体的防治台账
     x = df_last_result_all.copy()
-    x = x[['调查日期','区域','乡镇/街道','点位编号','点位名','发生位置','地块类型','危害寄主','受害株数','网幕数','巡查是否剪网',
-           '剪网是否彻底','派单时间', '首次防治日期','最新调查日期','最新调查结果','总调查次数','总防治次数','当前状态']]
+    x = x[['调查日期', '区域', '乡镇/街道', '点位编号', '点位名', '发生位置', '地块类型', '危害寄主', '受害株数',
+           '网幕数', '巡查是否剪网',
+           '剪网是否彻底', '派单时间', '首次防治日期', '最新调查日期', '最新调查结果', '总调查次数', '总防治次数',
+           '当前状态']]
     # 为了展示好看，将日期转换为字符串格式
     x['调查日期'] = x['调查日期'].dt.strftime('%Y-%m-%d')
     x['派单时间'] = x['派单时间'].dt.strftime('%Y-%m-%d')
@@ -87,6 +89,7 @@ def show_current_status():
     x.reset_index(inplace=True, drop=True)
     st.subheader('整体防治台账')
     st.dataframe(x, use_container_width=True)
+    x.to_excel('整体防治台账.xlsx')
 
     # 共展示3个数据框
 
@@ -110,7 +113,7 @@ def show_current_status():
                                        left_on=['点位编号', '调查日期'], right_on=['点位编号', '最新调查日期'],
                                        how='inner')
         df_to_review_survey['时间'] = ""
-        df_to_review_survey = df_to_review_survey[['乡镇/街道', '点位编号', '点位名', '时间', '发生位置','危害寄主',
+        df_to_review_survey = df_to_review_survey[['乡镇/街道', '点位编号', '点位名', '时间', '发生位置', '危害寄主',
                                                    '受害株数', '网幕数', '虫龄', '备注']]
         # df_to_review_survey.to_excel('复查表.xlsx', index=False)
         st.dataframe(df_to_review_survey, use_container_width=True)
