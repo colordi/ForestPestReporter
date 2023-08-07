@@ -2,7 +2,7 @@ import streamlit as st
 import pandas as pd
 import yaml
 # 获取数据
-from get_data import df_survey_2, df_treatment_2, df_first_damage_2
+from get_data import get_data
 
 # 调整页面布局
 st.set_page_config(layout='wide')
@@ -84,6 +84,8 @@ def show_survey_data(df_survey, df_first_damage):
 if __name__ == '__main__':
     # 设置页面标题
     st.title("美国白蛾巡查统计")
+    # 从数据库中获取数据
+    df_survey_2, df_treatment_2, df_first_damage_2 = get_data(gen=2)
 
     tab1, tab2, tab3 = st.tabs(["第一代", "第二代", "第三代"])
     with tab2:

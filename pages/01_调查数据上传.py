@@ -54,7 +54,7 @@ def show_sample_data():
 
 
 if __name__ == '__main__':
-    st.header("功能暂时停止使用！")
+    # st.header("功能暂时停止使用！")
     st.header("上传Excel文件")
     show_sample_data()
     upload_excel_to_database(mysql_table="2023年第二代美国白蛾调查表")

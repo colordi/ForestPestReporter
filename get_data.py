@@ -32,6 +32,3 @@ def get_data(gen=1):
     idx = df_survey_filtered_grouped['调查日期'].idxmin()
     df_first_damage = df_survey_filtered.loc[idx]
     return df_survey, df_treatment, df_first_damage
-
-
-df_survey_2, df_treatment_2, df_first_damage_2 = get_data(gen=2)

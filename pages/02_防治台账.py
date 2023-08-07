@@ -1,7 +1,7 @@
 import streamlit as st
 import pandas as pd
 # 获取数据
-from get_data import df_survey_2, df_treatment_2, df_first_damage_2
+from get_data import get_data
 
 
 # 定义一个函数用于获取最新一次的调查结果和防治结果
@@ -117,5 +117,8 @@ def show_current_status(df_survey, df_first_damage, df_treatment):
 
 
 if __name__ == '__main__':
+    # 从数据库中获取数据
+    df_survey_2, df_treatment_2, df_first_damage_2 = get_data(gen=2)
+
     show_current_status(df_survey=df_survey_2, df_first_damage=df_first_damage_2, df_treatment=df_treatment_2)
     pass

@@ -9,7 +9,7 @@ from docx import Document
 from docx.shared import Inches
 
 # 获取数据
-from get_data import df_survey_2
+from get_data import get_data
 
 
 # 定义日期选择器函数
@@ -148,7 +148,6 @@ def generate_word(filtered_data, template_file, img_files):
         # 为筛选后的数据添加一列序号
         # filtered_data['序号'] = range(1, len(filtered_data) + 1)
         filtered_data.loc[:, '序号'] = range(1, len(filtered_data) + 1)
-        filtered_data['调查日期'] = filtered_data['调查日期'].dt.strftime('%Y-%m-%d')
 
         template_file = template_file
         img_files = img_files
@@ -175,6 +174,9 @@ def generate_word(filtered_data, template_file, img_files):
 
 if __name__ == '__main__':
     st.title('派单生成器')
+    # 从数据库中获取数据
+    df_survey_2, df_treatment_2, df_first_damage_2 = get_data(gen=2)
+
     filtered_data = show_select_data(df_survey=df_survey_2)
     template_file = r'template/美国白蛾派单模版.docx'
     img_files = get_images()
