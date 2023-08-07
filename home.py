@@ -1,30 +1,15 @@
 import streamlit as st
 import pandas as pd
+import yaml
+# 获取数据
+from get_data import df_survey_2, df_treatment_2, df_first_damage_2
 
 # 调整页面布局
 st.set_page_config(layout='wide')
 
 
-# @st.cache_data
-# 读取数据库
-def get_data():
-    # 读取调查表和防治表
-    df_survey = pd.read_excel(r"data/2023年第二代美国白蛾调查表.xlsx", dtype={'受害株数': 'Int64', '网幕数': 'Int64'})
-    df_treatment = pd.read_excel(r"data/2023年第二代美国白蛾防治表.xlsx")
-    return df_survey, df_treatment
-
-
-df_survey, df_treatment = get_data()
-
-# 获取每个点位第一次受害的数据
-df_survey_filtered = df_survey[df_survey['受害株数'] > 0]
-df_survey_filtered_grouped = df_survey_filtered.groupby('点位编号')
-idx = df_survey_filtered_grouped['调查日期'].idxmin()
-df_first_damage = df_survey_filtered.loc[idx]
-
-
 # 定义展示汇总数据的函数
-def show_summary_data():
+def show_summary_data(df_survey, df_first_damage):
     # 汇总信息
     total_survey_site_counts = len(df_survey)  # 总巡查点位数
     total_damage_site_counts = len(df_first_damage)  # 总受害点位数
@@ -38,32 +23,30 @@ def show_summary_data():
     town_damage_tree_counts = df_first_damage[df_first_damage['区域'] == '乡镇']['受害株数'].sum()
     # 城区总受害株数
     city_damage_tree_counts = df_first_damage[df_first_damage['区域'] == '城区']['受害株数'].sum()
+    # 乡镇总网幕数
+    town_net_counts = df_first_damage[df_first_damage['区域'] == '乡镇']['网幕数'].sum()
+    # 城区总网幕数
+    city_net_counts = df_first_damage[df_first_damage['区域'] == '城区']['网幕数'].sum()
 
     # 展示汇总信息
-    st.header('汇总信息')
     col1, col2, col3 = st.columns(3)
     with col1:
-        st.metric(label="总巡查点位数", value=total_survey_site_counts)
+        st.markdown(
+            '### 巡查点位信息汇总\n - 总巡查点位数：{}\n - 总受害点位数：:red[{}]\n - 城区受害点位数：{}\n - 乡镇受害点位数：{}'.format(
+                total_survey_site_counts, total_damage_site_counts, city_damage_site_counts, town_damage_site_counts))
     with col2:
-        st.metric(label="总受害点位数", value=total_damage_site_counts)
+        st.markdown(
+            '### 巡查株数信息汇总\n - 总受害株数：:red[{}]\n - 城区受害株数：{}\n - 乡镇受害株数：{}'.format(total_tree_counts,
+                                                                                                    city_damage_tree_counts,
+                                                                                                    town_damage_tree_counts))
     with col3:
-        st.metric(label="总受害株数", value=total_tree_counts)
-    col4, col5, col6 = st.columns(3)
-    with col4:
-        st.metric(label="总网幕数", value=total_net_counts)
-    with col5:
-        st.metric(label="城区受害点位数", value=city_damage_site_counts)
-    with col6:
-        st.metric(label="城区受害株数", value=city_damage_tree_counts)
-    col7, col8, col9 = st.columns(3)
-    with col8:
-        st.metric(label="乡镇受害点位数", value=town_damage_site_counts)
-    with col9:
-        st.metric(label="乡镇受害株数", value=town_damage_tree_counts)
+        st.markdown('### 巡查网幕信息汇总\n - 总网幕数：{}\n - 城区网幕数：{}\n - 乡镇网幕数：{}'.format(total_net_counts,
+                                                                                                      city_net_counts,
+                                                                                                      town_net_counts))
 
 
 # 定义展示巡查数据的函数
-def show_survey_data():
+def show_survey_data(df_survey, df_first_damage):
     # 根据调查日期获取乡镇和城区各调查了多少点位
     town_date_sites = df_survey[df_survey['区域'] == '乡镇'].groupby('调查日期')['点位编号'].nunique()
     city_date_sites = df_survey[df_survey['区域'] == '城区'].groupby('调查日期')['点位编号'].nunique()
@@ -101,7 +84,10 @@ def show_survey_data():
 if __name__ == '__main__':
     # 设置页面标题
     st.title("美国白蛾巡查统计")
-    # 展示汇总数据
-    show_summary_data()
-    # 展示巡查数据
-    show_survey_data()
+
+    tab1, tab2, tab3 = st.tabs(["第一代", "第二代", "第三代"])
+    with tab2:
+        # 展示汇总数据
+        show_summary_data(df_survey=df_survey_2, df_first_damage=df_first_damage_2)
+        # 展示巡查数据
+        show_survey_data(df_survey=df_survey_2, df_first_damage=df_first_damage_2)

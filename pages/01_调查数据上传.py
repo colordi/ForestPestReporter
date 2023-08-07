@@ -1,26 +1,28 @@
 import streamlit as st
 import pandas as pd
+from sqlalchemy import create_engine
+
+mysql_user = "yandi"
+mysql_password = "yandi123.<>?"
+mysql_host = "103.106.191.190"
+mysql_database = "forestry_pests_2023"
+mysql_port = 3306
 
 
-def upload_excel_to_database():
+def upload_excel_to_database(mysql_table):
     # 创建一个上传文件的控件
     uploaded_file = st.file_uploader("上传Excel文件", type=["xlsx", "xls"])
 
     if uploaded_file is not None:
         # 使用Pandas读取上传的Excel文件
         df = pd.read_excel(uploaded_file)
-        # 将上传的数据保存到data文件夹下
-        df.to_excel(r"data/{}".format(uploaded_file.name), index=False)
-        # 将上传的数据合并到df_survey中
-        df_survey = pd.read_excel(r"data/第一代美国白蛾调查表.xlsx")
-        # 合并之前，先确定两个表的列名是一致的，否则提示用户上传的数据格式不正确
-        if set(df.columns) != set(df_survey.columns):
-            st.error("上传的数据格式不正确，请检查！")
-        else:
-            df_survey = pd.concat([df_survey, df], axis=0)
-            df_survey.to_excel(r"data/第一代美国白蛾调查表.xlsx", index=False)
-            # 提示上传成功
-            st.success("上传成功！")
+        # 创建 MySQL 数据库连接
+        engine = create_engine(
+            f"mysql+pymysql://{mysql_user}:{mysql_password}@{mysql_host}:{mysql_port}/{mysql_database}")
+        # 将数据插入到 MySQL 数据库中
+        df.to_sql(name=mysql_table, con=engine, if_exists='append', index=False)
+        # 提示上传成功
+        st.success("上传成功！")
 
 
 def show_sample_data():
@@ -53,6 +55,6 @@ def show_sample_data():
 
 if __name__ == '__main__':
     st.header("功能暂时停止使用！")
-    # st.header("上传Excel文件")
-    # show_sample_data()
-    # upload_excel_to_database()
+    st.header("上传Excel文件")
+    show_sample_data()
+    upload_excel_to_database()

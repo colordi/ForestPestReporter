@@ -1,10 +1,11 @@
 import streamlit as st
 import pandas as pd
-from home import df_survey, df_treatment, df_first_damage
+# 获取数据
+from get_data import df_survey_2, df_treatment_2, df_first_damage_2
 
 
 # 定义一个函数用于获取最新一次的调查结果和防治结果
-def get_last_result():
+def get_last_result(df_survey, df_treatment, df_first_damage):
     df_survey_grouped = df_survey.groupby('点位编号')
     df_survey_res = df_survey_grouped.apply(lambda g: pd.Series({
         '总调查次数': g['调查日期'].count(),
@@ -37,15 +38,12 @@ def get_current_status(row):
         return '待复查'
 
 
-# 展示当前点位信息
-df_last_result_all = get_last_result()
-df_last_result_all['当前状态'] = df_last_result_all.apply(get_current_status, axis=1)
-# 修改列名的顺序
-df_last_result = df_last_result_all[
-    ['点位编号', '最新调查日期', '最新防治日期', '最新调查结果', '总调查次数', '总防治次数', '当前状态']]
-
-
-def show_current_status():
+def show_current_status(df_survey, df_first_damage, df_treatment):
+    # 展示当前点位信息
+    df_last_result_all = get_last_result(df_survey, df_treatment, df_first_damage)
+    df_last_result_all['当前状态'] = df_last_result_all.apply(get_current_status, axis=1)
+    # 修改列名的顺序
+    df_last_result = df_last_result_all[['点位编号', '最新调查日期', '最新防治日期', '最新调查结果', '总调查次数', '总防治次数', '当前状态']]
     total_damage_site_counts = len(df_first_damage)  # 总受害点位数
     # 总已经防治点位数，即初次受害点位中剪网是否彻底为是的点位数和为否且防治次数大于0的点位数
     # 剪网是否彻底为否的点位数据
@@ -55,7 +53,6 @@ def show_current_status():
     no_treated_site_counts = len(no_treated_site_counts[no_treated_site_counts['点位编号'].isin(treatment_list)])
     # 剪网是否彻底为是的点位数
     yes_treated_site_counts = len(df_first_damage[df_first_damage['剪网是否彻底'] == '是'])
-    print(yes_treated_site_counts)
     total_treated_site_counts = no_treated_site_counts + yes_treated_site_counts
     # 合格点位数
     total_qualified_site_counts = len(df_last_result[df_last_result['当前状态'] == '合格'])
@@ -68,28 +65,19 @@ def show_current_status():
     with col3:
         st.metric(label='合格点位数', value=total_qualified_site_counts)
 
-    # 为了展示好看，将日期转换为字符串格式
-    df_last_result['最新调查日期'] = df_last_result['最新调查日期'].dt.strftime('%Y-%m-%d')
-    df_last_result['最新防治日期'] = df_last_result['最新防治日期'].dt.strftime('%Y-%m-%d')
-
     # 展示整体的防治台账
     x = df_last_result_all.copy()
     x = x[['调查日期', '区域', '乡镇/街道', '点位编号', '点位名', '发生位置', '地块类型', '危害寄主', '受害株数',
            '网幕数', '巡查是否剪网',
            '剪网是否彻底', '派单时间', '首次防治日期', '最新调查日期', '最新调查结果', '总调查次数', '总防治次数',
            '当前状态']]
-    # 为了展示好看，将日期转换为字符串格式
-    x['调查日期'] = x['调查日期'].dt.strftime('%Y-%m-%d')
-    x['派单时间'] = x['派单时间'].dt.strftime('%Y-%m-%d')
-    x['首次防治日期'] = x['首次防治日期'].dt.strftime('%Y-%m-%d')
-    x['最新调查日期'] = x['最新调查日期'].dt.strftime('%Y-%m-%d')
     # 按照调查日期升序排列
     x.sort_values(by='调查日期', inplace=True)
     # 重置索引
     x.reset_index(inplace=True, drop=True)
     st.subheader('整体防治台账')
     st.dataframe(x, use_container_width=True)
-    x.to_excel('整体防治台账.xlsx')
+    # x.to_excel('整体防治台账.xlsx')
 
     # 共展示3个数据框
 
@@ -108,7 +96,6 @@ def show_current_status():
     if col1.button('生成复查表'):
         # 获取df_survey中调查日期为df_to_review中最新调查日期的数据且点位编号在df_to_review中的数据
         df_survey_copy = df_survey.copy()
-        df_survey_copy['调查日期'] = df_survey_copy['调查日期'].dt.strftime('%Y-%m-%d')
         df_to_review_survey = pd.merge(df_survey_copy, df_to_review,
                                        left_on=['点位编号', '调查日期'], right_on=['点位编号', '最新调查日期'],
                                        how='inner')
@@ -130,5 +117,5 @@ def show_current_status():
 
 
 if __name__ == '__main__':
-    show_current_status()
+    show_current_status(df_survey=df_survey_2, df_first_damage=df_first_damage_2, df_treatment=df_treatment_2)
     pass

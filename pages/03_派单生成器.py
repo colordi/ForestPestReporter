@@ -1,4 +1,5 @@
 import os
+import shutil
 
 import streamlit as st
 import pandas as pd
@@ -7,11 +8,12 @@ from PIL import Image
 from docx import Document
 from docx.shared import Inches
 
-from home import df_survey, df_treatment, df_first_damage
+# 获取数据
+from get_data import df_survey_2
 
 
 # 定义日期选择器函数
-def show_select_data():
+def show_select_data(df_survey):
     selected_date = st.date_input('选择一个日期', value=date.today())
     # 用选定的日期来过滤数据
     filtered_data = df_survey[df_survey['调查日期'] == pd.to_datetime(selected_date)]
@@ -158,15 +160,22 @@ def generate_word(filtered_data, template_file, img_files):
                 process_word(row=row, template_file=template_file, img_files=img_files)
         # 生成完成后，弹出提示
         st.success('派单生成完成！')
-        st.success('请在「派单」文件夹中查看！')
         st.success('共生成{}份派单！'.format(len(filtered_data)))
+        # 将生成的派单文件夹打包
+        shutil.make_archive('派单', 'zip', '派单')
+        # 删除派单文件夹
+        shutil.rmtree('派单')
+        # 下载派单压缩包
+        with open('派单.zip', 'rb') as fb:
+            st.download_button(label='下载派单压缩包', data=fb, file_name='派单.zip', mime='application/zip')
+
     else:
         st.info('请点击生成派单按钮！')
 
 
 if __name__ == '__main__':
     st.title('派单生成器')
-    filtered_data = show_select_data()
+    filtered_data = show_select_data(df_survey=df_survey_2)
     template_file = r'template/美国白蛾派单模版.docx'
     img_files = get_images()
     generate_word(filtered_data, template_file, img_files)

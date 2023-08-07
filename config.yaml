@@ -1,0 +1,6 @@
+database:
+  host: 103.106.191.190
+  port: 3306
+  username: yandi
+  password: yandi123.<>?
+  database: forestry_pests_2023
