@@ -1,5 +1,6 @@
 import pandas as pd
 import yaml
+import pymysql
 
 # 读取配置文件
 with open("config.yaml", "r") as file:
@@ -19,11 +20,16 @@ def get_data(gen=1):
         pass
     elif gen == 2:
         # 从MySQL数据库中读取调查表和防治表
-        df_survey = pd.read_sql_table('2023年第二代美国白蛾调查表',
-                                      'mysql+pymysql://{}:{}@{}:{}/{}'.format(username, password, host, port, database))
-        df_treatment = pd.read_sql_table('2023年第二代美国白蛾防治表',
-                                         'mysql+pymysql://{}:{}@{}:{}/{}'.format(username, password, host, port,
-                                                                                 database))
+        # 建立数据库连接
+        conn = pymysql.connect(host=host, port=port, user=username, password=password, database=database)
+        # 执行SQL查询并获取数据
+        query_survey = "SELECT * FROM `2023年第二代美国白蛾调查表`"
+        query_treatment = "SELECT * FROM `2023年第二代美国白蛾防治表`"
+        df_survey = pd.read_sql(query_survey, conn)
+        df_treatment = pd.read_sql(query_treatment, conn)
+
+        # 关闭数据库连接
+        conn.close()
     elif gen == 3:
         pass
     # 获取每个点位第一次受害的数据
