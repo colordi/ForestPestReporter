@@ -34,7 +34,6 @@ def get_data(gen=1):
         engine.dispose()
     elif gen == 3:
         pass
-    print(df_survey.info())
     # 获取每个点位第一次受害的数据
     df_survey_filtered = df_survey[df_survey['受害株数'] > 0]
     df_survey_filtered_grouped = df_survey_filtered.groupby('点位编号')

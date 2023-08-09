@@ -72,46 +72,64 @@ def show_current_status(df_survey, df_first_damage, df_treatment):
            '剪网是否彻底', '派单时间', '首次防治日期', '最新调查日期', '最新调查结果', '总调查次数', '总防治次数',
            '当前状态']]
     # 按照调查日期升序排列
-    x.sort_values(by='调查日期', inplace=True)
+    x.sort_values(by=['调查日期', '点位编号'], inplace=True)
     # 重置索引
     x.reset_index(inplace=True, drop=True)
+    x['总防治次数'].fillna(0, inplace=True)
     st.subheader('整体防治台账')
+    # 为了展示好看，将日期转换为字符串
+    x['调查日期'] = x['调查日期'].dt.strftime('%Y-%m-%d')
+    x['派单时间'] = x['派单时间'].dt.strftime('%Y-%m-%d')
+    x['首次防治日期'] = x['首次防治日期'].dt.strftime('%Y-%m-%d')
+    x['最新调查日期'] = x['最新调查日期'].dt.strftime('%Y-%m-%d')
     st.dataframe(x, use_container_width=True)
-    # x.to_excel('整体防治台账.xlsx')
 
     # 共展示3个数据框
 
     # 状态为待防治
     df_to_treat = df_last_result[df_last_result['当前状态'] == '待防治']
+    df_to_treat = df_to_treat.copy()
     df_to_treat.reset_index(inplace=True, drop=True)
     st.subheader('待防治点位')
+    # 为了展示好看，将日期转换为字符串
+    df_to_treat['最新调查日期'] = df_to_treat['最新调查日期'].dt.strftime('%Y-%m-%d')
+    df_to_treat['最新防治日期'] = df_to_treat['最新防治日期'].dt.strftime('%Y-%m-%d')
+    df_to_treat['总防治次数'].fillna(0, inplace=True)
     st.dataframe(df_to_treat, use_container_width=True)
 
     # 状态为待复查
     df_to_review = df_last_result[df_last_result['当前状态'] == '待复查']
+    df_to_review = df_to_review.copy()
     df_to_review.reset_index(inplace=True, drop=True)
+
+    # 获取df_survey中调查日期为df_to_review中最新调查日期的数据且点位编号在df_to_review中的数据
+    df_survey_copy = df_survey.copy()
+    df_to_review_survey = pd.merge(df_survey_copy, df_to_review,
+                                   left_on=['点位编号', '调查日期'], right_on=['点位编号', '最新调查日期'],
+                                   how='inner')
+    df_to_review_survey['时间'] = ""
+    df_to_review_survey = df_to_review_survey[['乡镇/街道', '点位编号', '点位名', '时间', '发生位置', '危害寄主',
+                                               '受害株数', '网幕数', '虫龄', '备注']]
+
     st.subheader('待复查点位')
-    # 生成复查表的按钮
-    col1, col2 = st.columns(2)
-    if col1.button('生成复查表'):
-        # 获取df_survey中调查日期为df_to_review中最新调查日期的数据且点位编号在df_to_review中的数据
-        df_survey_copy = df_survey.copy()
-        df_to_review_survey = pd.merge(df_survey_copy, df_to_review,
-                                       left_on=['点位编号', '调查日期'], right_on=['点位编号', '最新调查日期'],
-                                       how='inner')
-        df_to_review_survey['时间'] = ""
-        df_to_review_survey = df_to_review_survey[['乡镇/街道', '点位编号', '点位名', '时间', '发生位置', '危害寄主',
-                                                   '受害株数', '网幕数', '虫龄', '备注']]
-        # df_to_review_survey.to_excel('复查表.xlsx', index=False)
-        st.dataframe(df_to_review_survey, use_container_width=True)
-        pass
+    # 为了展示好看，将日期转换为字符串
+    df_to_review['最新调查日期'] = df_to_review['最新调查日期'].dt.strftime('%Y-%m-%d')
+    df_to_review['最新防治日期'] = df_to_review['最新防治日期'].dt.strftime('%Y-%m-%d')
+    df_to_review['总防治次数'].fillna(0, inplace=True)
     st.dataframe(df_to_review, use_container_width=True)
-    if col2.button('清除复查表'):
-        st.empty()
+    # 生成复查表的下载按钮
+    st.download_button(label='下载复查表', data=df_to_review_survey.to_csv(index=False).encode('utf-8'),
+                       file_name='复查表.csv', mime='text/csv')
+
 
     # 状态为合格
     df_qualified = df_last_result[df_last_result['当前状态'] == '合格']
+    df_qualified = df_qualified.copy()
     df_qualified.reset_index(inplace=True, drop=True)
+    # 为了展示好看，将日期转换为字符串
+    df_qualified['最新调查日期'] = df_qualified['最新调查日期'].dt.strftime('%Y-%m-%d')
+    df_qualified['最新防治日期'] = df_qualified['最新防治日期'].dt.strftime('%Y-%m-%d')
+    df_qualified['总防治次数'].fillna(0, inplace=True)
     st.subheader('合格点位')
     st.dataframe(df_qualified, use_container_width=True)
 
@@ -119,6 +137,6 @@ def show_current_status(df_survey, df_first_damage, df_treatment):
 if __name__ == '__main__':
     # 从数据库中获取数据
     df_survey_2, df_treatment_2, df_first_damage_2 = get_data(gen=2)
-
+    st.markdown('## 2023 年美国白蛾第二代防治台账')
     show_current_status(df_survey=df_survey_2, df_first_damage=df_first_damage_2, df_treatment=df_treatment_2)
     pass

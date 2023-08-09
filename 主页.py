@@ -88,6 +88,17 @@ if __name__ == '__main__':
     df_survey_2, df_treatment_2, df_first_damage_2 = get_data(gen=2)
 
     tab1, tab2, tab3 = st.tabs(["第一代", "第二代", "第三代"])
+    with tab1:
+        # 展示汇总信息
+        col1, col2, col3 = st.columns(3)
+        with col1:
+            st.markdown(
+                '### 巡查点位信息汇总\n - 总巡查点位数：1366\n - 总受害点位数：:red[373]\n - 城区受害点位数：258\n - 乡镇受害点位数：115')
+        with col2:
+            st.markdown(
+                '### 巡查株数信息汇总\n - 总受害株数：:red[1729]\n - 城区受害株数：1161\n - 乡镇受害株数：568')
+        with col3:
+            st.markdown('### 巡查网幕信息汇总\n - 总网幕数：7337\n - 城区网幕数：5057\n - 乡镇网幕数：2280')
     with tab2:
         # 展示汇总数据
         show_summary_data(df_survey=df_survey_2, df_first_damage=df_first_damage_2)
