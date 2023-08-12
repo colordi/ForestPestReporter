@@ -43,7 +43,7 @@ def show_current_status(df_survey, df_first_damage, df_treatment):
     df_last_result_all = get_last_result(df_survey, df_treatment, df_first_damage)
     df_last_result_all['当前状态'] = df_last_result_all.apply(get_current_status, axis=1)
     # 修改列名的顺序
-    df_last_result = df_last_result_all[['点位编号', '最新调查日期', '最新防治日期', '最新调查结果', '总调查次数', '总防治次数', '当前状态']]
+    df_last_result = df_last_result_all[['点位编号', '点位名', '最新调查日期', '最新防治日期', '最新调查结果', '总调查次数', '总防治次数', '当前状态']]
     total_damage_site_counts = len(df_first_damage)  # 总受害点位数
     # 总已经防治点位数，即初次受害点位中剪网是否彻底为是的点位数和为否且防治次数大于0的点位数
     # 剪网是否彻底为否的点位数据
@@ -75,6 +75,8 @@ def show_current_status(df_survey, df_first_damage, df_treatment):
     x.sort_values(by=['调查日期', '点位编号'], inplace=True)
     # 重置索引
     x.reset_index(inplace=True, drop=True)
+    # 索引从1开始
+    x.index = x.index + 1
     x['总防治次数'].fillna(0, inplace=True)
     st.subheader('整体防治台账')
     # 为了展示好看，将日期转换为字符串
@@ -90,6 +92,8 @@ def show_current_status(df_survey, df_first_damage, df_treatment):
     df_to_treat = df_last_result[df_last_result['当前状态'] == '待防治']
     df_to_treat = df_to_treat.copy()
     df_to_treat.reset_index(inplace=True, drop=True)
+    # 索引从1开始
+    df_to_treat.index = df_to_treat.index + 1
     st.subheader('待防治点位')
     # 为了展示好看，将日期转换为字符串
     df_to_treat['最新调查日期'] = df_to_treat['最新调查日期'].dt.strftime('%Y-%m-%d')
@@ -101,11 +105,13 @@ def show_current_status(df_survey, df_first_damage, df_treatment):
     df_to_review = df_last_result[df_last_result['当前状态'] == '待复查']
     df_to_review = df_to_review.copy()
     df_to_review.reset_index(inplace=True, drop=True)
+    # 索引从1开始
+    df_to_review.index = df_to_review.index + 1
 
     # 获取df_survey中调查日期为df_to_review中最新调查日期的数据且点位编号在df_to_review中的数据
     df_survey_copy = df_survey.copy()
     df_to_review_survey = pd.merge(df_survey_copy, df_to_review,
-                                   left_on=['点位编号', '调查日期'], right_on=['点位编号', '最新调查日期'],
+                                   left_on=['点位编号', '调查日期', '点位名'], right_on=['点位编号', '最新调查日期', '点位名'],
                                    how='inner')
     df_to_review_survey['时间'] = ""
     df_to_review_survey = df_to_review_survey[['乡镇/街道', '点位编号', '点位名', '时间', '发生位置', '危害寄主',
@@ -126,6 +132,8 @@ def show_current_status(df_survey, df_first_damage, df_treatment):
     df_qualified = df_last_result[df_last_result['当前状态'] == '合格']
     df_qualified = df_qualified.copy()
     df_qualified.reset_index(inplace=True, drop=True)
+    # 索引从1开始
+    df_qualified.index = df_qualified.index + 1
     # 为了展示好看，将日期转换为字符串
     df_qualified['最新调查日期'] = df_qualified['最新调查日期'].dt.strftime('%Y-%m-%d')
     df_qualified['最新防治日期'] = df_qualified['最新防治日期'].dt.strftime('%Y-%m-%d')

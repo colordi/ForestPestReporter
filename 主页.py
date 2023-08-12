@@ -70,6 +70,8 @@ def show_survey_data(df_survey, df_first_damage):
     df_city.reset_index(inplace=True)
     # 合并这两个表格
     df = pd.merge(df_town, df_city, how='outer', on=['调查日期'], suffixes=('_乡镇', '_城区'))
+    # 索引从1开始
+    df.index = df.index + 1
 
     # 展示数据
     st.header("巡查数据")
