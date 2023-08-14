@@ -23,8 +23,8 @@ def get_data(gen=1):
         # 建立数据库连接
         engine = create_engine('mysql+pymysql://{}:{}@{}:{}/{}'.format(username, password, host, port, database))
         # 执行SQL查询并获取数据
-        query_survey = "SELECT * FROM `2023年第二代美国白蛾调查表`"
-        query_treatment = "SELECT * FROM `2023年第二代美国白蛾防治表`"
+        query_survey = "SELECT * FROM `2023_美国白蛾_2代_调查表`"
+        query_treatment = "SELECT * FROM `2023_美国白蛾_2代_防治表`"
         df_survey = pd.read_sql(query_survey, engine)
         df_survey['调查日期'] = pd.to_datetime(df_survey['调查日期'], format='%Y-%m-%d')
         df_survey['派单时间'] = pd.to_datetime(df_survey['派单时间'], format='%Y-%m-%d')
