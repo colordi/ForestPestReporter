@@ -19,12 +19,15 @@ def get_last_result(df_survey, df_treatment, df_first_damage):
         '最新调查结果': g.loc[g['调查日期'].idxmax(), '调查结果']
     }))
     # fixme 还需要解决防治表中如果没有数据会报错的问题
-    df_treatment_grouped = df_treatment.groupby('点位编号')
-    df_treatment_res = df_treatment_grouped.apply(lambda g: pd.Series({
-        '总防治次数': g['防治日期'].count(),
-        '最新防治日期': g['防治日期'].max(),
-        '首次防治日期': g['防治日期'].min(),
-    }))
+    if df_treatment.empty:
+        df_treatment_res = pd.DataFrame(columns=['点位编号', '总防治次数', '最新防治日期', '首次防治日期'])
+    else:
+        df_treatment_grouped = df_treatment.groupby('点位编号')
+        df_treatment_res = df_treatment_grouped.apply(lambda g: pd.Series({
+            '总防治次数': g['防治日期'].count(),
+            '最新防治日期': g['防治日期'].max(),
+            '首次防治日期': g['防治日期'].min(),
+        }))
 
     # 把索引列点位编号转换为普通列
     df_survey_res.reset_index(inplace=True)

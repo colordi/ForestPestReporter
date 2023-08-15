@@ -14,28 +14,18 @@ def get_data(gen=1):
         pass
     elif gen == 2:
         # 执行SQL查询并获取数据
-        query = '''
-        SELECT x.*,y.村庄,
-               x.1号 + x.2号 + x.3号 + x.4号 + x.5号 AS 总数,
-               (x.1号 + x.2号 + x.3号 + x.4号 + x.5号) / 5 AS 平均
-        FROM `2023_国槐尺蠖_2代_调查表` AS x
-        INNER JOIN `国槐点位信息表` AS y ON x.点位编号 = y.点位编号
-        ORDER BY x.调查日期 ASC, 平均 DESC;
-        '''
+        query = "SELECT * FROM `2023_蚜虫_2代_调查表`;"
         df_survey = pd.read_sql(query, engine)
         df_survey['调查日期'] = pd.to_datetime(df_survey['调查日期'], format='%Y-%m-%d')
 
-        query = '''
-        SELECT *
-        FROM `2023_国槐尺蠖_2代_防治表`;
-        '''
+        query = "SELECT * FROM `2023_蚜虫_2代_防治表`;"
         df_treatment = pd.read_sql(query, engine)
         df_treatment['防治日期'] = pd.to_datetime(df_treatment['防治日期'], format='%Y-%m-%d')
         # 关闭数据库连接
         engine.dispose()
 
         # 获取每个点位第一次受害的数据
-        df_survey_filtered = df_survey[df_survey['点位名'].notnull()]
+        df_survey_filtered = df_survey[df_survey['点位编号'].notnull()]
         df_survey_filtered_grouped = df_survey_filtered.groupby('点位编号')
         idx = df_survey_filtered_grouped['调查日期'].idxmin()
         df_first_damage = df_survey_filtered.loc[idx]
@@ -47,7 +37,7 @@ def get_data(gen=1):
 
 df_survey, df_treatment, df_first_damage = get_data(gen=2)
 
-st.sidebar.title('国槐尺蠖防治系统')
+st.sidebar.title('蚜虫防治系统')
 radio = st.sidebar.radio('请选择功能', ['巡查数据', '防治台账'])
 
 # 巡查数据

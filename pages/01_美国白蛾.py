@@ -7,6 +7,7 @@ radio = st.sidebar.radio('请选择功能', ['巡查数据汇总', '防治台账
 
 
 # 获取数据
+@st.cache_data
 def get_data(gen=1):
     engine = get_engine()
     # 读取调查表和防治表
