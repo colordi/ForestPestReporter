@@ -4,7 +4,6 @@ from tools import get_last_result, get_current_status, get_engine
 
 
 # 获取数据的函数
-@st.cache_data
 def get_data(gen=1):
     # 读取调查表和防治表
     # 从MySQL数据库中读取调查表和防治表

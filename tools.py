@@ -18,7 +18,6 @@ def get_last_result(df_survey, df_treatment, df_first_damage):
         '最新调查日期': g['调查日期'].max(),
         '最新调查结果': g.loc[g['调查日期'].idxmax(), '调查结果']
     }))
-    # fixme 还需要解决防治表中如果没有数据会报错的问题
     if df_treatment.empty:
         df_treatment_res = pd.DataFrame(columns=['点位编号', '总防治次数', '最新防治日期', '首次防治日期'])
     else:

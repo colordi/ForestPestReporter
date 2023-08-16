@@ -79,8 +79,11 @@ def process_word(row, template_file, img_files, pest_object, reporter):
         greenery_type = "平原造林"
         webbed_nests = str(row['1号'] + row['2号'] + row['3号'] + row['4号'] + row['5号'])
     elif pest_object == '蚜虫':
-        # todo 蚜虫的派单格式还需要补充
-        pass
+        report_time = ""
+        host = "国槐"
+        number_of_trees = 20
+        greenery_type = "行道树"
+        webbed_nests = 0
 
     doc = Document(template_file)  # 读取Word模板文件
     # 替换第一段落的内容

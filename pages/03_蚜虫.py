@@ -4,7 +4,6 @@ from tools import get_last_result, get_current_status, get_engine
 
 
 # 获取数据的函数
-@st.cache_data
 def get_data(gen=1):
     # 读取调查表和防治表
     # 从MySQL数据库中读取调查表和防治表
@@ -14,11 +13,11 @@ def get_data(gen=1):
         pass
     elif gen == 2:
         # 执行SQL查询并获取数据
-        query = "SELECT * FROM `2023_蚜虫_2代_调查表`;"
+        query = "SELECT * FROM `2023_蚜虫_2 代_调查表`;"
         df_survey = pd.read_sql(query, engine)
         df_survey['调查日期'] = pd.to_datetime(df_survey['调查日期'], format='%Y-%m-%d')
 
-        query = "SELECT * FROM `2023_蚜虫_2代_防治表`;"
+        query = "SELECT * FROM `2023_蚜虫_2 代_防治表`;"
         df_treatment = pd.read_sql(query, engine)
         df_treatment['防治日期'] = pd.to_datetime(df_treatment['防治日期'], format='%Y-%m-%d')
         # 关闭数据库连接
