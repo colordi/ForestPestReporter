@@ -8,7 +8,6 @@ from datetime import date
 from PIL import Image
 from docx import Document
 from docx.shared import Inches
-from tools import get_engine
 
 # 显示日期、虫种、代数选择器
 col1, col2, col3 = st.columns(3)

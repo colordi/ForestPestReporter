@@ -1,6 +1,4 @@
 import pandas as pd
-from sqlalchemy import create_engine
-import yaml
 
 
 def get_last_result(df_survey, df_treatment, df_first_damage):

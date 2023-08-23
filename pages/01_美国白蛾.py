@@ -2,7 +2,7 @@ import sqlite3
 
 import streamlit as st
 import pandas as pd
-from tools import get_engine, get_last_result, get_current_status
+from tools import get_last_result, get_current_status
 
 st.sidebar.title('美国白蛾防治系统')
 radio = st.sidebar.radio('请选择功能', ['巡查数据汇总', '防治台账'])

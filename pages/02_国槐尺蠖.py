@@ -2,7 +2,7 @@ import sqlite3
 
 import streamlit as st
 import pandas as pd
-from tools import get_last_result, get_current_status, get_engine
+from tools import get_last_result, get_current_status
 
 
 # 获取数据的函数
