@@ -1,3 +1,5 @@
+import sqlite3
+
 import streamlit as st
 import pandas as pd
 from tools import get_last_result, get_current_status, get_engine
@@ -5,33 +7,31 @@ from tools import get_last_result, get_current_status, get_engine
 
 # 获取数据的函数
 def get_data(gen=1):
-    # 读取调查表和防治表
-    # 从MySQL数据库中读取调查表和防治表
     # 建立数据库连接
-    engine = get_engine()
+    conn = sqlite3.connect('forestry_pests_2023.sqlite3')
     if gen == 1:
         pass
     elif gen == 2:
         # 执行SQL查询并获取数据
         query = '''
-        SELECT x.*,y.村庄,
-               x.1号 + x.2号 + x.3号 + x.4号 + x.5号 AS 总数,
-               (x.1号 + x.2号 + x.3号 + x.4号 + x.5号) / 5 AS 平均
+        SELECT x.*,
+               x."1号" + x."2号" + x."3号" + x."4号" + x."5号" AS 总数,
+               (x."1号" + x."2号" + x."3号" + x."4号" + x."5号") / 5 AS 平均
         FROM `2023_国槐尺蠖_2代_调查表` AS x
-        INNER JOIN `国槐点位信息表` AS y ON x.点位编号 = y.点位编号
-        ORDER BY x.调查日期 ASC, 平均 DESC;
+        ORDER BY x.调查日期, 平均 DESC;
         '''
-        df_survey = pd.read_sql(query, engine)
+        df_survey = pd.read_sql(query, conn)
         df_survey['调查日期'] = pd.to_datetime(df_survey['调查日期'], format='%Y-%m-%d')
+        print(df_survey)
 
         query = '''
         SELECT *
         FROM `2023_国槐尺蠖_2代_防治表`;
         '''
-        df_treatment = pd.read_sql(query, engine)
+        df_treatment = pd.read_sql(query, conn)
         df_treatment['防治日期'] = pd.to_datetime(df_treatment['防治日期'], format='%Y-%m-%d')
         # 关闭数据库连接
-        engine.dispose()
+        conn.close()
 
         # 获取每个点位第一次受害的数据
         df_survey_filtered = df_survey[df_survey['点位名'].notnull()]

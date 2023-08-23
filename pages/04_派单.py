@@ -1,5 +1,6 @@
 import os
 import shutil
+import sqlite3
 
 import streamlit as st
 import pandas as pd
@@ -22,11 +23,12 @@ with col3:
 # 用选定的内容来过滤数据
 # @st.cache_data
 def get_data():
-    engine = get_engine()
+    # 建立数据库连接
+    conn = sqlite3.connect('forestry_pests_2023.sqlite3')
     # 读取数据
     query = f"SELECT * FROM `2023_{pest}_{gen}代_调查表`"
-    df_survey = pd.read_sql(query, engine)
-    engine.dispose()
+    df_survey = pd.read_sql(query, conn)
+    conn.close()
     return df_survey
 
 

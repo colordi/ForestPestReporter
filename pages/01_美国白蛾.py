@@ -1,3 +1,5 @@
+import sqlite3
+
 import streamlit as st
 import pandas as pd
 from tools import get_engine, get_last_result, get_current_status
@@ -8,20 +10,20 @@ radio = st.sidebar.radio('请选择功能', ['巡查数据汇总', '防治台账
 
 # 获取数据
 def get_data(gen=1):
-    engine = get_engine()
-    # 读取调查表和防治表
+    # 建立数据库连接
+    conn = sqlite3.connect('forestry_pests_2023.sqlite3')
     if gen == 1:
         pass
     elif gen == 2:
         # 执行SQL查询并获取数据
         query_survey = "SELECT * FROM `2023_美国白蛾_2代_调查表`"
         query_treatment = "SELECT * FROM `2023_美国白蛾_2代_防治表`"
-        df_survey = pd.read_sql(query_survey, engine)
-        df_treatment = pd.read_sql(query_treatment, engine)
+        df_survey = pd.read_sql(query_survey, conn)
+        df_treatment = pd.read_sql(query_treatment, conn)
     elif gen == 3:
         pass
     # 关闭数据库连接
-    engine.dispose()
+    conn.close()
 
     df_survey['调查日期'] = pd.to_datetime(df_survey['调查日期'], format='%Y-%m-%d')
     df_survey['派单时间'] = pd.to_datetime(df_survey['派单时间'], format='%Y-%m-%d')

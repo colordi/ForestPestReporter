@@ -1,27 +1,26 @@
 import streamlit as st
 import pandas as pd
 from tools import get_last_result, get_current_status, get_engine
+import sqlite3
 
 
 # 获取数据的函数
 def get_data(gen=1):
-    # 读取调查表和防治表
-    # 从MySQL数据库中读取调查表和防治表
     # 建立数据库连接
-    engine = get_engine()
+    conn = sqlite3.connect('forestry_pests_2023.sqlite3')
     if gen == 1:
         pass
     elif gen == 2:
         # 执行SQL查询并获取数据
         query = "SELECT * FROM `2023_蚜虫_2 代_调查表`;"
-        df_survey = pd.read_sql(query, engine)
+        df_survey = pd.read_sql(query, conn)
         df_survey['调查日期'] = pd.to_datetime(df_survey['调查日期'], format='%Y-%m-%d')
 
         query = "SELECT * FROM `2023_蚜虫_2 代_防治表`;"
-        df_treatment = pd.read_sql(query, engine)
+        df_treatment = pd.read_sql(query, conn)
         df_treatment['防治日期'] = pd.to_datetime(df_treatment['防治日期'], format='%Y-%m-%d')
         # 关闭数据库连接
-        engine.dispose()
+        conn.close()
 
         # 获取每个点位第一次受害的数据
         df_survey_filtered = df_survey[df_survey['点位编号'].notnull()]

@@ -54,19 +54,3 @@ def get_current_status(row):
             return '待防治'
     else:
         return '待复查'
-
-
-# 定义获取数据库引擎的函数
-def get_engine():
-    # 读取配置文件
-    with open("config.yaml", "r") as file:
-        config = yaml.safe_load(file)
-    # 提取连接信息
-    host = config["database"]["host"]
-    port = config["database"]["port"]
-    username = config["database"]["username"]
-    password = config["database"]["password"]
-    database = config["database"]["database"]
-    # 建立数据库连接
-    engine = create_engine('mysql+pymysql://{}:{}@{}:{}/{}'.format(username, password, host, port, database))
-    return engine
