@@ -43,6 +43,9 @@ if radio == '巡查数据':
     x = df_survey.copy()
     # 把日期转换为字符串
     x['调查日期'] = x['调查日期'].dt.strftime('%Y-%m-%d')
+    # 索引从1开始
+    x.index = range(1, len(x) + 1)
+
     st.dataframe(x, use_container_width=True)
 
 # 防治台账

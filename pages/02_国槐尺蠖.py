@@ -22,12 +22,8 @@ def get_data(gen=1):
         '''
         df_survey = pd.read_sql(query, conn)
         df_survey['调查日期'] = pd.to_datetime(df_survey['调查日期'], format='%Y-%m-%d')
-        print(df_survey)
 
-        query = '''
-        SELECT *
-        FROM `2023_国槐尺蠖_2代_防治表`;
-        '''
+        query = "SELECT * FROM `2023_国槐尺蠖_2代_防治表`;"
         df_treatment = pd.read_sql(query, conn)
         df_treatment['防治日期'] = pd.to_datetime(df_treatment['防治日期'], format='%Y-%m-%d')
         # 关闭数据库连接
@@ -47,13 +43,31 @@ def get_data(gen=1):
 df_survey, df_treatment, df_first_damage = get_data(gen=2)
 
 st.sidebar.title('国槐尺蠖防治系统')
-radio = st.sidebar.radio('请选择功能', ['巡查数据', '防治台账'])
+radio = st.sidebar.radio('请选择功能', ['巡查记录', '防治台账'])
 
-# 巡查数据
-if radio == '巡查数据':
+# 巡查记录
+if radio == '巡查记录':
     x = df_survey.copy()
     # 把日期转换为字符串
     x['调查日期'] = x['调查日期'].dt.strftime('%Y-%m-%d')
+    # 索引从1开始
+    x.index = range(1, len(x) + 1)
+
+
+    def show_progress():
+        # 读取数据库中的国槐点位信息表
+        conn = sqlite3.connect('forestry_pests_2023.sqlite3')
+        query = "SELECT * FROM `国槐点位信息表`;"
+        df = pd.read_sql(query, conn)
+        conn.close()
+        # 计算调查日期列中非空值的个数
+        current = df['2代调查日期'].notnull().sum()
+        allcounts = len(df['2代调查日期'])
+        value = current / allcounts
+        # 显示进度条
+        st.progress(value, f"当前调查:red[{current}]总点位:blue[{allcounts }]进度:orange[{round(value * 100, 2)}%]")
+        return None
+    show_progress()
     st.dataframe(x, use_container_width=True)
 
 # 防治台账
@@ -63,8 +77,9 @@ elif radio == '防治台账':
     # 计算当前状态
     df_last_result['当前状态'] = df_last_result.apply(get_current_status, axis=1)
     # 仅保留需要的列
-    df_last_result = df_last_result[['调查日期', '乡镇/街道', '点位编号', '点位名', '详细描述', '最新调查日期', '最新防治日期',
-                                     '总调查次数', '总防治次数', '当前状态']]
+    df_last_result = df_last_result[
+        ['调查日期', '乡镇/街道', '点位编号', '点位名', '详细描述', '最新调查日期', '最新防治日期',
+         '总调查次数', '总防治次数', '当前状态']]
     # 为了展示好看，将日期转换为字符串
     df_last_result['调查日期'] = df_last_result['调查日期'].dt.strftime('%Y-%m-%d')
     df_last_result['最新调查日期'] = df_last_result['最新调查日期'].dt.strftime('%Y-%m-%d')
