@@ -192,7 +192,7 @@ elif radio == '防治台账':
         df_status['派单时间'] = df_status['派单时间'].dt.strftime('%Y-%m-%d')
         df_status['首次防治日期'] = df_status['首次防治日期'].dt.strftime('%Y-%m-%d')
         df_status['最新调查日期'] = df_status['最新调查日期'].dt.strftime('%Y-%m-%d')
-        options = st.multiselect('请选择点位状态', ['待防治', '待复查', '合格'], default=['待防治', '待复查', '合格'])
+        options = st.multiselect('请选择点位状态', ['待防治', '待复查', '合格'], default=['待防治', '待复查', '合格'],key=str(gen))
         # 根据选择的点位状态筛选数据
         filtered_df = df_status[df_status['当前状态'].isin(options)]
         # 重置索引
