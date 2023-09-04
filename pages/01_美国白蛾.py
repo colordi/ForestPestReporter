@@ -21,7 +21,11 @@ def get_data(gen=1):
         df_survey = pd.read_sql(query_survey, conn)
         df_treatment = pd.read_sql(query_treatment, conn)
     elif gen == 3:
-        pass
+        # 执行SQL查询并获取数据
+        query_survey = "SELECT * FROM `2023_美国白蛾_3代_调查表`"
+        query_treatment = "SELECT * FROM `2023_美国白蛾_3代_防治表`"
+        df_survey = pd.read_sql(query_survey, conn)
+        df_treatment = pd.read_sql(query_treatment, conn)
     # 关闭数据库连接
     conn.close()
 
@@ -143,7 +147,8 @@ if radio == '巡查数据汇总':
         show_summary(gen=2)
         show_day_summary(gen=2)
     with tab3:
-        pass
+        show_summary(gen=3)
+        show_day_summary(gen=3)
 
 # 防治台账
 elif radio == '防治台账':
@@ -182,7 +187,7 @@ elif radio == '防治台账':
         df_status['总防治次数'].fillna(0, inplace=True)
 
         # 展示数据
-        st.subheader("2023 年美国白蛾第二代防治台账")
+        st.subheader(f"2023 年美国白蛾第{gen}代防治台账")
         df_status['调查日期'] = df_status['调查日期'].dt.strftime('%Y-%m-%d')
         df_status['派单时间'] = df_status['派单时间'].dt.strftime('%Y-%m-%d')
         df_status['首次防治日期'] = df_status['首次防治日期'].dt.strftime('%Y-%m-%d')
@@ -206,3 +211,6 @@ elif radio == '防治台账':
     with tab2:
         show_treat_status(gen=2)
         show_ledger(gen=2)
+    with tab3:
+        show_treat_status(gen=3)
+        show_ledger(gen=3)
