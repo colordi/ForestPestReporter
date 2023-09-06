@@ -30,7 +30,7 @@ def get_data(gen=1):
     conn.close()
 
     df_survey['调查日期'] = pd.to_datetime(df_survey['调查日期'], format='%Y-%m-%d')
-    df_survey['派单时间'] = pd.to_datetime(df_survey['派单时间'], format='%Y-%m-%d')
+    df_survey['派单时间'] = pd.to_datetime(df_survey['派单时间'], format='mixed')
     df_treatment['防治日期'] = pd.to_datetime(df_treatment['防治日期'], format='%Y-%m-%d')
 
     # 获取每个点位第一次受害的数据
