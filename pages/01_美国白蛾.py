@@ -21,6 +21,7 @@ def get_data(gen=1):
         df_survey = pd.read_sql(query_survey, conn)
         df_treatment = pd.read_sql(query_treatment, conn)
     elif gen == 3:
+        conn = sqlite3.connect('forestry_pest_2023_db.sqlite')
         # 执行SQL查询并获取数据
         query_survey = "SELECT * FROM `2023_美国白蛾_3代_调查表`"
         query_treatment = "SELECT * FROM `2023_美国白蛾_3代_防治表`"

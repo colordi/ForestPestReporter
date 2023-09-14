@@ -23,7 +23,7 @@ with col3:
 # @st.cache_data
 def get_data():
     # 建立数据库连接
-    conn = sqlite3.connect('forestry_pests_2023.sqlite3')
+    conn = sqlite3.connect('forestry_pest_2023_db.sqlite')
     # 读取数据
     query = f"SELECT * FROM `2023_{pest}_{gen}代_调查表`"
     df_survey = pd.read_sql(query, conn)
