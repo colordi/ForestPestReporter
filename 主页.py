@@ -20,4 +20,5 @@ st.set_page_config(layout='wide')
 if __name__ == '__main__':
     # 设置页面标题
     st.title("林业有害生物防治系统")
+    st.markdown("## 美国白蛾")
     st.markdown(update)
