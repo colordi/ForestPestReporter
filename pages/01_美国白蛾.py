@@ -180,11 +180,12 @@ elif radio == '防治台账':
         df_status = df_status[
             ['调查日期', '区域', '乡镇/街道', '点位编号', '点位名', '发生位置', '地块类型', '危害寄主', '受害株数',
              '网幕数', '巡查是否剪网', '剪网是否彻底', '派单时间', '首次防治日期', '最新调查日期', '最新调查结果',
-             '总调查次数', '总防治次数', '当前状态']]
+             '总调查次数', '上报次数', '总防治次数', '当前状态']]
         # 按照调查日期升序排列
         df_status.sort_values(by=['调查日期', '点位编号'], inplace=True)
         df_status.index = df_status.index + 1
         df_status['总防治次数'].fillna(0, inplace=True)
+        df_status['上报次数'].fillna(0, inplace=True)
 
         # 展示数据
         st.subheader(f"2023 年美国白蛾第{gen}代防治台账")

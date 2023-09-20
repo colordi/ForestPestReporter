@@ -13,6 +13,7 @@ def get_last_result(df_survey, df_treatment, df_first_damage):
     df_survey_grouped = df_survey.groupby('点位编号')
     df_survey_res = df_survey_grouped.apply(lambda g: pd.Series({
         '总调查次数': g['调查日期'].count(),
+        '上报次数': g['上报时间'].count(),
         '最新调查日期': g['调查日期'].max(),
         '最新调查结果': g.loc[g['调查日期'].idxmax(), '调查结果']
     }))
