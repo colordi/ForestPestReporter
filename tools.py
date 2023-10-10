@@ -53,3 +53,7 @@ def get_current_status(row):
             return '待防治'
     else:
         return '待复查'
+
+
+def filter_data(data, date):
+    return data[data['日期'] == pd.to_datetime(date)]
